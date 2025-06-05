@@ -1,0 +1,108 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Two-Factor Authentication</h3>
+                </div>
+                <div class="card-body">
+                    <% if (messages.error) { %>
+                        <div class="alert alert-danger">
+                            <%= messages.error %>
+                        </div>
+                    <% } %>
+
+                    <% if (messages.success) { %>
+                        <div class="alert alert-success">
+                            <%= messages.success %>
+                        </div>
+                    <% } %>
+
+                    <div class="alert alert-info">
+                        <p>A verification code has been sent to your email address.</p>
+                        <p>Please enter the 6-digit code below.</p>
+                        <% if (code) { %>
+                            <p class="text-muted">Demo code: <strong><%= code %></strong></p>
+                        <% } %>
+                    </div>
+
+                    <form id="twoFactorForm" action="/auth/2fa/verify" method="POST">
+                        <div class="form-group">
+                            <label for="code">Verification Code</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="code" 
+                                   name="code" 
+                                   pattern="[0-9]{6}" 
+                                   maxlength="6" 
+                                   required 
+                                   autocomplete="off"
+                                   placeholder="Enter 6-digit code">
+                            <small class="form-text text-muted">
+                                Code expires in <span id="countdown">10:00</span>
+                            </small>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary btn-block">Verify</button>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a href="/auth/login" class="text-muted">Back to Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('twoFactorForm');
+    const codeInput = document.getElementById('code');
+    const countdownEl = document.getElementById('countdown');
+
+    // Format time as MM:SS
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    // Start countdown
+    let timeLeft = 600; // 10 minutes in seconds
+    const countdown = setInterval(() => {
+        timeLeft--;
+        countdownEl.textContent = formatTime(timeLeft);
+        
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            form.submit(); // Redirect to login when time expires
+        }
+    }, 1000);
+
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const code = codeInput.value.trim();
+        
+        if (!/^\d{6}$/.test(code)) {
+            alert('Please enter a valid 6-digit code');
+            return;
+        }
+        
+        this.submit();
+    });
+
+    // Auto-format code input
+    codeInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+    });
+});
+</script>
+
+<%- include('../partials/footer') %> 

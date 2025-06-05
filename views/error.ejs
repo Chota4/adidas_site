@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Adidas</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-body text-center">
+                        <h1 class="display-4 text-danger mb-4">
+                            <%= title %>
+                        </h1>
+                        
+                        <div class="alert alert-danger">
+                            <%= message %>
+                        </div>
+
+                        <% if (error && error.stack && process.env.NODE_ENV === 'development') { %>
+                            <div class="mt-4">
+                                <h5>Stack Trace:</h5>
+                                <pre class="bg-light p-3 rounded text-start">
+                                    <code><%= error.stack %></code>
+                                </pre>
+                            </div>
+                        <% } %>
+
+                        <div class="mt-4">
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-home me-2"></i>Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
